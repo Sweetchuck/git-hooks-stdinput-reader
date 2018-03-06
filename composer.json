@@ -1,0 +1,42 @@
+{
+    "name": "sweetchuck/git-hooks-stdinput-reader",
+    "description": "Read and parse the StdInput of Git hooks",
+    "license": "GPL-2.0-or-later",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "bin-dir": "bin",
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0",
+        "sweetchuck/git-hooks": "^0.0",
+        "sweetchuck/robo-git": "^0.0",
+        "sweetchuck/robo-phpcs": "^0.0",
+        "sweetchuck/robo-phpmd": "^0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sweetchuck\\GitHooksStdInputReader\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sweetchuck\\GitHooksStdInputReader\\Tests\\": "src-dev/Tests/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@deploy-git-hooks"
+        ],
+        "post-update-cmd": [
+            "@deploy-git-hooks"
+        ],
+        "deploy-git-hooks": "\\Sweetchuck\\GitHooks\\Composer\\Scripts::deploy"
+    }
+}
