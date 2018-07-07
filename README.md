@@ -1,4 +1,4 @@
-# Robo task to read and parse the stdInput of Git hook scripts
+# Read and parse the stdInput of Git hook scripts
 
 [![CircleCI](https://circleci.com/gh/Sweetchuck/git-hooks-stdinput-reader.svg?style=svg)](https://circleci.com/gh/Sweetchuck/git-hooks-stdinput-reader)
 [![codecov](https://codecov.io/gh/Sweetchuck/git-hooks-stdinput-reader/branch/master/graph/badge.svg)](https://codecov.io/gh/Sweetchuck/git-hooks-stdinput-reader)
