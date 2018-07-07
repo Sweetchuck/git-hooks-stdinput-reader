@@ -56,13 +56,12 @@ _custom:
         name: 'PHPUnit'
         command: 'bin/robo test'
     step__store_test_results: &step__store_test_results
-        path: 'tests/_output/machine/junit'
+        path: 'reports/machine/unit'
     step__run__codecov: &step__run__codecov
         name: 'Publish the code coverage report on Codecov.io'
         when: 'always'
         command: >
-            [ ! -s tests/_output/machine/coverage/*/coverage.xml ]
-            || bash <(curl -s https://codecov.io/bash)
+            bash <(curl -s https://codecov.io/bash)
             || true
 
     job__lint_and_test: &job__lint_and_test
