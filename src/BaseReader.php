@@ -30,6 +30,8 @@ abstract class BaseReader implements \Iterator, \SeekableIterator, \Countable
 
     /**
      * {@inheritdoc}
+     *
+     * @return null|\Sweetchuck\GitHooksStdInputReader\Item\BaseItem
      */
     public function current()
     {

@@ -2,6 +2,9 @@
 
 namespace Sweetchuck\GitHooksStdInputReader;
 
+/**
+ * @method Item\PostRewriteItem current()
+ */
 class PostRewriteReader extends BaseReader
 {
     protected function parse(string $line)

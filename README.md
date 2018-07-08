@@ -23,7 +23,6 @@ use Sweetchuck\GitHooksStdInputReader\PreReceiveReader;
 
 $reader = PreReceiveReader(STDIN);
 
-/** @var \Sweetchuck\GitHooksStdInputReader\Item\ReceiveItem $item */ 
 foreach ($reader as $item) {
     echo 'Old value: ', $item->oldValue, PHP_EOL;
     echo 'New value: ', $item->newValue, PHP_EOL;
