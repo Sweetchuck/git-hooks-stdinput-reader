@@ -2,7 +2,7 @@
 
 namespace Sweetchuck\GitHooksStdInputReader;
 
-abstract class BaseReader implements \Iterator, \SeekableIterator
+abstract class BaseReader implements \Iterator, \SeekableIterator, \Countable
 {
     /**
      * @var array
@@ -81,7 +81,7 @@ abstract class BaseReader implements \Iterator, \SeekableIterator
             return;
         }
 
-        if (!feof($this->fileHandler)) {
+        if (!$this->isAllReaded()) {
             $this->currentIndex = count($this->items) - 1;
         }
 
@@ -90,10 +90,20 @@ abstract class BaseReader implements \Iterator, \SeekableIterator
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function count()
+    {
+        $this->readAll();
+
+        return count($this->items);
+    }
+
     protected function readNext()
     {
         $this->currentIndex++;
-        if (!feof($this->fileHandler) && !isset($this->items[$this->currentIndex])) {
+        if (!$this->isAllReaded() && !$this->valid()) {
             $line = fgets($this->fileHandler);
             if (!$line) {
                 return;
@@ -106,5 +116,29 @@ abstract class BaseReader implements \Iterator, \SeekableIterator
 
             $this->items[$this->currentIndex] = $item;
         }
+    }
+
+    /**
+     * @return $this
+     */
+    protected function readAll()
+    {
+        if ($this->isAllReaded()) {
+            return $this;
+        }
+
+        $currentIndex = $this->currentIndex;
+        while ($this->valid()) {
+            $this->next();
+        }
+
+        $this->seek($currentIndex);
+
+        return $this;
+    }
+
+    protected function isAllReaded(): bool
+    {
+        return feof($this->fileHandler);
     }
 }
