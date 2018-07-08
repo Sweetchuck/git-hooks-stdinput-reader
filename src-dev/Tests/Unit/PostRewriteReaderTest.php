@@ -13,7 +13,7 @@ class PostRewriteReaderTest extends ReaderTestBase
     /**
      * {@inheritdoc}
      */
-    public function caseSeekable(): array
+    public function caseAllInOne(): array
     {
         return [
             'basic' => [

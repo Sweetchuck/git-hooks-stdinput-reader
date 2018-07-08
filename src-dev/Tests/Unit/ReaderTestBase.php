@@ -12,12 +12,12 @@ abstract class ReaderTestBase extends TestBase
      */
     protected $gitHook = '';
 
-    abstract public function caseSeekable(): array;
+    abstract public function caseAllInOne(): array;
 
     /**
-     * @dataProvider caseSeekable
+     * @dataProvider caseAllInOne
      */
-    public function testSeekable(array $lines)
+    public function testAllInOne(array $lines)
     {
         $reader = $this->getReader($this->gitHook, $lines);
 
@@ -30,5 +30,19 @@ abstract class ReaderTestBase extends TestBase
 
         $reader->rewind();
         $this->assertSame($lines[0], (string) $reader->current());
+
+        $reader->seek(3);
+        $this->assertSame(count($lines), count($reader));
+        $this->assertSame(
+            $lines[3],
+            (string) $reader->current(),
+            "After count() the position hasn't changed."
+        );
+
+        /** @var \Sweetchuck\GitHooksStdInputReader\Item\BaseItem $item */
+        foreach ($reader as $key => $item) {
+            $this->assertSame($lines[$key], (string) $item);
+        }
+        $this->assertSame(count($lines), count($reader));
     }
 }
