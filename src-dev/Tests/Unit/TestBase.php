@@ -4,10 +4,11 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\GitHooksStdInputReader\Tests\Unit;
 
+use PHPUnit\Framework\TestCase;
 use Sweetchuck\GitHooksStdInputReader\BaseReader;
 use Sweetchuck\GitHooksStdInputReader\ReaderFactory;
 
-abstract class TestBase extends \PHPUnit\Framework\TestCase
+abstract class TestBase extends TestCase
 {
     protected function getReader(string $gitHook, $lines): ?BaseReader
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Sweetchuck\GitHooksStdInputReader\Item;
 
 class PrePushItem extends BaseItem

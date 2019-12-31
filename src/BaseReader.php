@@ -1,8 +1,14 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Sweetchuck\GitHooksStdInputReader;
 
-abstract class BaseReader implements \Iterator, \SeekableIterator, \Countable
+use Countable;
+use Iterator;
+use SeekableIterator;
+
+abstract class BaseReader implements Iterator, SeekableIterator, Countable
 {
     /**
      * @var array

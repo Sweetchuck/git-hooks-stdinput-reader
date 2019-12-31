@@ -39,7 +39,6 @@ abstract class ReaderTestBase extends TestBase
             "After count() the position hasn't changed."
         );
 
-        /** @var \Sweetchuck\GitHooksStdInputReader\Item\BaseItem $item */
         foreach ($reader as $key => $item) {
             $this->assertSame($lines[$key], (string) $item);
         }

@@ -15,13 +15,13 @@
 ## Usage
 
 **.git/hooks/pre-receive**
-```php
+```PHP
 #!/usr/bin/env php
 <?php
 
 use Sweetchuck\GitHooksStdInputReader\PreReceiveReader;
 
-$reader = PreReceiveReader(STDIN);
+$reader = new PreReceiveReader(STDIN);
 
 foreach ($reader as $item) {
     echo 'Old value: ', $item->oldValue, PHP_EOL;

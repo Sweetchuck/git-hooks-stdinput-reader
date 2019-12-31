@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Sweetchuck\GitHooksStdInputReader\Tests\Unit;
 
 use Sweetchuck\GitHooksStdInputReader\PostReceiveReader;
