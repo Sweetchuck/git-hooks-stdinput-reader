@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Sweetchuck\GitHooksStdInputReader;
 
 class ReaderFactory
@@ -18,6 +20,8 @@ class ReaderFactory
      * @param resource $fileHandler
      *
      * @throws \InvalidArgumentException
+     *
+     * @SuppressWarnings(UndefinedVariable)
      */
     public static function createInstance(string $gitHook, $fileHandler): ?BaseReader
     {

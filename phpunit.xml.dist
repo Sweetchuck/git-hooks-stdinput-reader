@@ -1,40 +1,40 @@
 <phpunit
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-  bootstrap="src-dev/Tests/bootstrap.php"
-  colors="true">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="src-dev/Tests/bootstrap.php"
+    colors="true">
 
-  <testsuites>
-    <testsuite name="Unit">
-      <directory>src-dev/Tests/Unit</directory>
-    </testsuite>
-  </testsuites>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>src-dev/Tests/Unit</directory>
+        </testsuite>
+    </testsuites>
 
-  <filter>
-    <whitelist processUncoveredFilesFromWhitelist="true">
-      <directory>src/</directory>
-    </whitelist>
-  </filter>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>src/</directory>
+        </whitelist>
+    </filter>
 
-  <logging>
-    <log
-      type="coverage-text"
-      target="php://stdout"/>
+    <logging>
+        <log
+            type="coverage-text"
+            target="php://stdout" />
 
-    <log
-      type="coverage-html"
-      target="reports/human/coverage/html"/>
+        <log
+            type="coverage-html"
+            target="reports/human/coverage/html" />
 
-    <log
-      type="coverage-clover"
-      target="reports/machine/coverage/coverage.xml"/>
+        <log
+            type="coverage-clover"
+            target="reports/machine/coverage/coverage.xml" />
 
-    <log
-      type="testdox-html"
-      target="reports/human/unit/junit.html"/>
+        <log
+            type="testdox-html"
+            target="reports/human/unit/junit.html" />
 
-    <log
-      type="junit"
-      target="reports/machine/unit/junit.xml"/>
-  </logging>
+        <log
+            type="junit"
+            target="reports/machine/unit/junit.xml" />
+    </logging>
 </phpunit>
