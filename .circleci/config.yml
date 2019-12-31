@@ -73,29 +73,19 @@ commands:
         steps:
             -
                 run:
-                    name: 'Git config user.name and user.email'
-                    command: |
-                        git config --global user.name 'Circle CI'
-                        git config --global user.email 'circle.ci@example.com'
-            -
-                run:
-                    name: 'Codeception - unit'
-                    command: 'bin/robo test unit'
-            -
-                run:
-                    name: 'Codeception - acceptance'
-                    command: 'bin/robo test acceptance'
+                    name: 'Run unit tests'
+                    command: 'bin/robo test'
             -
                 store_test_results:
                     name: 'Store unit test results'
-                    path: './tests/_output/machine/junit'
+                    path: './reports/machine/unit'
             -
                 run:
                     # @todo Use orb.
                     name: 'Publish the code coverage report on Codecov.io'
                     when: 'always'
                     command: >-
-                        [ ! -s ./tests/_output/machine/coverage/coverage.xml ]
+                        [ ! -s ./reports/machine/coverage/coverage.xml ]
                         || bash <(curl -s https://codecov.io/bash)
                         || true
 
