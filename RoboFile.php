@@ -317,7 +317,10 @@ class RoboFile extends Tasks
 
     protected function isPhpExtensionAvailable(string $extension): bool
     {
-        $command = sprintf('%s -m', escapeshellcmd($this->getPhpExecutable()));
+        $command = [
+            $this->getPhpExecutable(),
+            '-m',
+        ];
 
         $process = new Process($command);
         $exitCode = $process->run();
@@ -330,7 +333,10 @@ class RoboFile extends Tasks
 
     protected function isPhpDbgAvailable(): bool
     {
-        $command = sprintf('%s -qrr', escapeshellcmd($this->getPhpdbgExecutable()));
+        $command = [
+            $this->getPhpdbgExecutable(),
+            '-qrr',
+        ];
 
         return (new Process($command))->run() === 0;
     }

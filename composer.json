@@ -1,6 +1,21 @@
 {
+    "type": "library",
     "name": "sweetchuck/git-hooks-stdinput-reader",
     "description": "Read and parse the StdInput of Git hooks",
+    "keywords": [
+        "git"
+    ],
+    "authors": [
+        {
+            "name": "Andor",
+            "role": "Maintainer",
+            "homepage": "https://github.com/Sweetchuck"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/Sweetchuck/git-hooks-stdinput-reader",
+        "issues": "https://github.com/Sweetchuck/git-hooks-stdinput-reader/issues"
+    },
     "license": "GPL-2.0-or-later",
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -11,15 +26,16 @@
         "sort-packages": true
     },
     "require": {
-        "php": ">=7.2"
+        "php": ">=7.3"
     },
     "require-dev": {
+        "phpmd/phpmd": "^2.9",
         "phpunit/phpunit": "^8.5",
         "squizlabs/php_codesniffer": "^3.5",
-        "sweetchuck/git-hooks": "^0.0",
-        "sweetchuck/robo-git": "^0.2",
-        "sweetchuck/robo-phpcs": "^0.1",
-        "sweetchuck/robo-phpmd": "^0.1"
+        "sweetchuck/git-hooks": "2.x-dev",
+        "sweetchuck/robo-git": "1.x-dev",
+        "sweetchuck/robo-phpcs": "1.x-dev",
+        "sweetchuck/robo-phpmd": "1.x-dev"
     },
     "autoload": {
         "psr-4": {
@@ -31,13 +47,6 @@
             "Sweetchuck\\GitHooksStdInputReader\\Tests\\": "src-dev/Tests/"
         }
     },
-    "scripts": {
-        "post-install-cmd": [
-            "@deploy-git-hooks"
-        ],
-        "post-update-cmd": [
-            "@deploy-git-hooks"
-        ],
-        "deploy-git-hooks": "\\Sweetchuck\\GitHooks\\Composer\\Scripts::deploy"
-    }
+    "scripts": {},
+    "scripts-descriptions": {}
 }
