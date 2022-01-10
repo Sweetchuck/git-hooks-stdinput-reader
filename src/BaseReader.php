@@ -39,6 +39,7 @@ abstract class BaseReader implements Iterator, SeekableIterator, Countable
      *
      * @return null|\Sweetchuck\GitHooksStdInputReader\Item\BaseItem
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->items[$this->currentIndex] ?? null;
@@ -49,6 +50,7 @@ abstract class BaseReader implements Iterator, SeekableIterator, Countable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->readNext();
@@ -57,6 +59,7 @@ abstract class BaseReader implements Iterator, SeekableIterator, Countable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->currentIndex;
@@ -65,6 +68,7 @@ abstract class BaseReader implements Iterator, SeekableIterator, Countable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->items[$this->currentIndex]);
@@ -73,6 +77,7 @@ abstract class BaseReader implements Iterator, SeekableIterator, Countable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->currentIndex = 0;
@@ -81,6 +86,7 @@ abstract class BaseReader implements Iterator, SeekableIterator, Countable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function seek($position)
     {
         if (isset($this->items[$position])) {
@@ -101,6 +107,7 @@ abstract class BaseReader implements Iterator, SeekableIterator, Countable
     /**
      * {@inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         $this->readAll();
