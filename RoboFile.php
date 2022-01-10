@@ -1,6 +1,6 @@
 <?php
 
-use League\Container\ContainerInterface;
+use League\Container\Container as LeagueContainer;
 use Robo\Tasks;
 use Robo\Collection\CollectionBuilder;
 use Sweetchuck\LintReport\Reporter\BaseReporter;
@@ -81,19 +81,27 @@ class RoboFile extends Tasks
     }
 
     /**
-     * {@inheritdoc}
+     * @hook pre-command @initLintReporters
      */
-    public function setContainer(ContainerInterface $container)
+    public function initLintReporters()
     {
-        if (!$container->has('lintCheckstyleReporter')) {
-            BaseReporter::lintReportConfigureContainer($container);
-        }
+        $lintServices = BaseReporter::getServices();
+        $container = $this->getContainer();
+        foreach ($lintServices as $name => $class) {
+            if ($container->has($name)) {
+                continue;
+            }
 
-        return parent::setContainer($container);
+            if ($container instanceof LeagueContainer) {
+                $container->share($name, $class);
+            }
+        }
     }
 
     /**
      * Git "pre-commit" hook callback.
+     *
+     * @initLintReporters
      */
     public function githookPreCommit(): CollectionBuilder
     {
@@ -109,6 +117,8 @@ class RoboFile extends Tasks
 
     /**
      * Run code style checkers.
+     *
+     * @initLintReporters
      */
     public function lint(): CollectionBuilder
     {
@@ -119,11 +129,17 @@ class RoboFile extends Tasks
             ->addTask($this->getTaskPhpmdLint());
     }
 
+    /**
+     * @initLintReporters
+     */
     public function lintPhpcs(): CollectionBuilder
     {
         return $this->getTaskPhpcsLint();
     }
 
+    /**
+     * @initLintReporters
+     */
     public function lintPhpmd(): CollectionBuilder
     {
         return $this->getTaskPhpmdLint();
@@ -220,7 +236,7 @@ class RoboFile extends Tasks
         }
 
         $this->composerInfo = json_decode(file_get_contents('composer.json'), true);
-        list($this->packageVendor, $this->packageName) = explode('/', $this->composerInfo['name']);
+        [$this->packageVendor, $this->packageName] = explode('/', $this->composerInfo['name']);
 
         if (!empty($this->composerInfo['config']['bin-dir'])) {
             $this->binDir = $this->composerInfo['config']['bin-dir'];
