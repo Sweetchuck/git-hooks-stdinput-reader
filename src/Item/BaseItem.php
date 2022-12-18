@@ -7,10 +7,7 @@ namespace Sweetchuck\GitHooksStdInputReader\Item;
 abstract class BaseItem
 {
 
-    /**
-     * @var string
-     */
-    protected $separator = ' ';
+    protected string $separator = ' ';
 
     abstract protected function getPropertyValues(): array;
 

@@ -1,4 +1,9 @@
 
-/bin/
 /reports/
 /vendor/
+
+/phpcs.xml
+
+/phpunit.xml
+
+/robo.yml

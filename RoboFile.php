@@ -1,71 +1,56 @@
 <?php
 
+declare(strict_types = 1);
+
 use League\Container\Container as LeagueContainer;
+use NuvoleWeb\Robo\Task\Config\Robo\loadTasks as ConfigLoader;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Robo\Common\ConfigAwareTrait;
+use Robo\Contract\ConfigAwareInterface;
 use Robo\Tasks;
 use Robo\Collection\CollectionBuilder;
 use Sweetchuck\LintReport\Reporter\BaseReporter;
 use Sweetchuck\Robo\Git\GitTaskLoader;
 use Sweetchuck\Robo\Phpcs\PhpcsTaskLoader;
 use Sweetchuck\Robo\PhpMessDetector\PhpmdTaskLoader;
+use Sweetchuck\Utils\Filter\ArrayFilterEnabled;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Process;
 
-class RoboFile extends Tasks
+class RoboFile extends Tasks implements LoggerAwareInterface, ConfigAwareInterface
 {
+    use LoggerAwareTrait;
+    use ConfigAwareTrait;
+    use ConfigLoader;
     use GitTaskLoader;
     use PhpcsTaskLoader;
     use PhpmdTaskLoader;
 
-    /**
-     * @var array
-     */
-    protected $composerInfo = [];
+    protected array $composerInfo = [];
 
-    /**
-     * @var string
-     */
-    protected $packageVendor = '';
+    protected string $packageVendor = '';
 
-    /**
-     * @var string
-     */
-    protected $packageName = '';
+    protected string $packageName = '';
 
-    /**
-     * @var string
-     */
-    protected $binDir = 'vendor/bin';
+    protected string $binDir = 'vendor/bin';
 
-    /**
-     * @var string
-     */
-    protected $gitHook = '';
+    protected string $gitHook = '';
 
-    /**
-     * @var string
-     */
-    protected $envVarNamePrefix = '';
+    protected string $envVarNamePrefix = '';
 
     /**
      * Allowed values: dev, ci, prod.
-     *
-     * @var string
      */
-    protected $environmentType = '';
+    protected string $environmentType = '';
 
     /**
      * Allowed values: local, jenkins, travis, circleci.
-     *
-     * @var string
      */
-    protected $environmentName = '';
+    protected string $environmentName = '';
 
-    /**
-     * @var \Symfony\Component\Filesystem\Filesystem
-     */
-    protected $fs;
+    protected Filesystem $fs;
 
     /**
      * RoboFile constructor.
@@ -85,16 +70,19 @@ class RoboFile extends Tasks
      */
     public function initLintReporters()
     {
-        $lintServices = BaseReporter::getServices();
         $container = $this->getContainer();
-        foreach ($lintServices as $name => $class) {
+        if (!($container instanceof LeagueContainer)) {
+            return;
+        }
+
+        foreach (BaseReporter::getServices() as $name => $class) {
             if ($container->has($name)) {
                 continue;
             }
 
-            if ($container instanceof LeagueContainer) {
-                $container->share($name, $class);
-            }
+            $container
+                ->add($name, $class)
+                ->setShared(false);
         }
     }
 
@@ -112,7 +100,7 @@ class RoboFile extends Tasks
             ->addTask($this->taskComposerValidate())
             ->addTask($this->getTaskPhpcsLint())
             ->addTask($this->getTaskPhpmdLint())
-            ->addTask($this->getTaskPhpunitRun());
+            ->addTask($this->getTaskPhpunitRunSuites());
     }
 
     /**
@@ -147,10 +135,14 @@ class RoboFile extends Tasks
 
     /**
      * Run the Robo unit tests.
+     *
+     * @param string[] $suiteNames
+     *
+     * @command test
      */
-    public function test(): CollectionBuilder
+    public function test(array $suiteNames): CollectionBuilder
     {
-        return $this->getTaskPhpunitRun();
+        return $this->getTaskPhpunitRunSuites($suiteNames);
     }
 
     protected function errorOutput(): ?OutputInterface
@@ -175,8 +167,8 @@ class RoboFile extends Tasks
      */
     protected function initEnvironmentTypeAndName()
     {
-        $this->environmentType = getenv($this->getEnvVarName('environment_type'));
-        $this->environmentName = getenv($this->getEnvVarName('environment_name'));
+        $this->environmentType = (string) getenv($this->getEnvVarName('environment_type'));
+        $this->environmentName = (string) getenv($this->getEnvVarName('environment_name'));
 
         if (!$this->environmentType) {
             if (getenv('CI') === 'true') {
@@ -214,11 +206,6 @@ class RoboFile extends Tasks
     protected function getEnvVarName(string $name): string
     {
         return "{$this->envVarNamePrefix}_" . strtoupper($name);
-    }
-
-    protected function getPhpExecutable(): string
-    {
-        return getenv($this->getEnvVarName('php_executable')) ?: PHP_BINARY;
     }
 
     protected function getPhpdbgExecutable(): string
@@ -289,8 +276,8 @@ class RoboFile extends Tasks
         $task = $this
             ->taskPhpmdLintFiles()
             ->setInputFile("./rulesets/$ruleSetName.include-pattern.txt")
-            ->setRuleSetFileNames([$ruleSetName])
-            ->setOutput($this->output());
+            ->setRuleSetFileNames([$ruleSetName]);
+        $task->setOutput($this->output());
 
         $excludeFileName = "./rulesets/$ruleSetName.exclude-pattern.txt";
         if ($this->fs->exists($excludeFileName)) {
@@ -300,61 +287,101 @@ class RoboFile extends Tasks
         return $task;
     }
 
-    protected function getTaskPhpunitRun(): CollectionBuilder
+    protected function getTaskPhpunitRunSuites(array $suiteNames = []): CollectionBuilder
     {
+        if (!$suiteNames) {
+            $suiteNames = ['all'];
+        }
+
+        $phpExecutables = array_filter(
+            (array) $this->getConfig()->get('php.executables'),
+            new ArrayFilterEnabled(),
+        );
+
+        $cb = $this->collectionBuilder();
+        foreach ($suiteNames as $suiteName) {
+            foreach ($phpExecutables as $phpExecutable) {
+                $cb->addTask($this->getTaskPhpunitRunSuite($suiteName, $phpExecutable));
+            }
+        }
+
+        return $cb;
+    }
+
+    protected function getTaskPhpunitRunSuite(string $suite, array $php): CollectionBuilder
+    {
+        $withCoverageHtml = $this->environmentType === 'dev';
+        $withCoverageXml = $this->environmentType === 'ci';
+
+        $withUnitReportHtml = $this->environmentType === 'dev';
+        $withUnitReportXml = $this->environmentType === 'ci';
+
         $logDir = 'reports';
 
+        $cmdPattern = '';
         $cmdArgs = [];
-        if ($this->isPhpDbgAvailable()) {
-            $cmdPattern = '%s -qrr';
-            $cmdArgs[] = escapeshellcmd($this->getPhpdbgExecutable());
-        } else {
-            $cmdPattern = '%s';
-            $cmdArgs[] = escapeshellcmd($this->getPhpExecutable());
+        foreach ($php['envVars'] ?? [] as $envName => $envValue) {
+            $cmdPattern .= "{$envName}";
+            if ($envValue === null) {
+                $cmdPattern .= ' ';
+            } else {
+                $cmdPattern .= '=%s ';
+                $cmdArgs[] = escapeshellarg($envValue);
+            }
         }
+
+        $cmdPattern .= '%s';
+        $cmdArgs[] = $php['command'];
 
         $cmdPattern .= ' %s';
         $cmdArgs[] = escapeshellcmd("{$this->binDir}/phpunit");
 
+        $cmdPattern .= ' --color=%s';
+        $cmdArgs[] = escapeshellarg('always');
         $cmdPattern .= ' --verbose';
+        $cmdPattern .= ' --debug';
+
+        if ($withCoverageHtml) {
+            $cmdPattern .= ' --coverage-html=%s';
+            $cmdArgs[] = escapeshellarg("$logDir/human/coverage/$suite/html");
+        }
+
+        if ($withCoverageXml) {
+            $cmdPattern .= ' --coverage-xml=%s';
+            $cmdArgs[] = escapeshellarg("$logDir/machine/coverage/$suite/coverage.xml");
+
+            $cmdPattern .= ' --coverage-clover=%s';
+            $cmdArgs[] = escapeshellarg("$logDir/machine/coverage/$suite/clover.xml");
+        }
+
+        if ($withCoverageHtml || $withCoverageXml) {
+            $cmdPattern .= ' --coverage-php=%s';
+            $cmdArgs[] = escapeshellarg("$logDir/machine/coverage/$suite/coverage.php");
+        }
+
+        if ($withUnitReportHtml) {
+            $cmdPattern .= ' --testdox-html=%s';
+            $cmdArgs[] = escapeshellarg("$logDir/human/testdox/testdox.$suite.html");
+        }
+
+        if ($withUnitReportXml) {
+            $cmdPattern .= ' --log-junit=%s';
+            $cmdArgs[] = escapeshellarg("$logDir/machine/junit/junit.$suite.xml");
+        }
+
+        if ($suite !== 'all') {
+            $cmdPattern .= ' --testsuite=%s';
+            $cmdArgs[] = escapeshellarg($suite);
+        }
+
+        if ($this->environmentType === 'ci' && $this->environmentName === 'jenkins') {
+            // Jenkins has to use a post-build action to mark the build "unstable".
+            $cmdPattern .= ' || [[ "${?}" == "1" ]]';
+        }
 
         return $this
             ->collectionBuilder()
-            ->addTask(
-                $this
-                    ->taskFilesystemStack()
-                    ->mkdir("$logDir/human/coverage")
-                    ->mkdir("$logDir/human/unit")
-                    ->mkdir("$logDir/machine/coverage")
-                    ->mkdir("$logDir/machine/unit")
-            )
             ->addTask($this->taskExec(vsprintf($cmdPattern, $cmdArgs)));
-    }
-
-    protected function isPhpExtensionAvailable(string $extension): bool
-    {
-        $command = [
-            $this->getPhpExecutable(),
-            '-m',
-        ];
-
-        $process = new Process($command);
-        $exitCode = $process->run();
-        if ($exitCode !== 0) {
-            throw new \RuntimeException('@todo');
-        }
-
-        return in_array($extension, explode("\n", $process->getOutput()));
-    }
-
-    protected function isPhpDbgAvailable(): bool
-    {
-        $command = [
-            $this->getPhpdbgExecutable(),
-            '-qrr',
-        ];
-
-        return (new Process($command))->run() === 0;
     }
 
     protected function getPhpmdRuleSetName(): string

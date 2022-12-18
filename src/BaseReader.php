@@ -7,18 +7,13 @@ namespace Sweetchuck\GitHooksStdInputReader;
 use Countable;
 use Iterator;
 use SeekableIterator;
+use Sweetchuck\GitHooksStdInputReader\Item\BaseItem;
 
 abstract class BaseReader implements Iterator, SeekableIterator, Countable
 {
-    /**
-     * @var array
-     */
-    protected $items = [];
+    protected array $items = [];
 
-    /**
-     * @var int
-     */
-    protected $currentIndex = -1;
+    protected int $currentIndex = -1;
 
     /**
      * @var resource
@@ -45,7 +40,7 @@ abstract class BaseReader implements Iterator, SeekableIterator, Countable
         return $this->items[$this->currentIndex] ?? null;
     }
 
-    abstract protected function parse(string $line);
+    abstract protected function parse(string $line): BaseItem;
 
     /**
      * {@inheritdoc}

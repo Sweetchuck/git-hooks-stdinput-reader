@@ -36,7 +36,7 @@ class ReaderFactoryTest extends TestBase
     /**
      * @dataProvider casesCreateInstance
      */
-    public function testCreateInstance(string $expected, string $gitHook)
+    public function testCreateInstance(string $expected, string $gitHook): void
     {
         $reader = $this->getReader($gitHook, []);
         $this->assertSame($expected, get_class($reader));

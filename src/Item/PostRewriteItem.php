@@ -7,20 +7,11 @@ namespace Sweetchuck\GitHooksStdInputReader\Item;
 class PostRewriteItem extends BaseItem
 {
 
-    /**
-     * @var string
-     */
-    public $oldSha1;
+    public string $oldSha1;
 
-    /**
-     * @var string
-     */
-    public $newSha1;
+    public string $newSha1;
 
-    /**
-     * @var null|string
-     */
-    public $extraInfo;
+    public ?string $extraInfo;
 
     public function __construct(string $oldSha1, string $newSha1, ?string $extraInfo = null)
     {
@@ -29,9 +20,6 @@ class PostRewriteItem extends BaseItem
         $this->extraInfo = $extraInfo;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getPropertyValues(): array
     {
         return $this->extraInfo === null ?

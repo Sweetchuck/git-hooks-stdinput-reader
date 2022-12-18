@@ -6,20 +6,11 @@ namespace Sweetchuck\GitHooksStdInputReader\Item;
 
 class ReceiveItem extends BaseItem
 {
-    /**
-     * @var string
-     */
-    public $oldValue;
+    public string $oldValue;
 
-    /**
-     * @var string
-     */
-    public $newValue;
+    public string $newValue;
 
-    /**
-     * @var string
-     */
-    public $refName;
+    public string $refName;
 
     public function __construct(string $oldValue, string $newValue, string $refName)
     {
@@ -28,9 +19,6 @@ class ReceiveItem extends BaseItem
         $this->refName = $refName;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getPropertyValues(): array
     {
         return [

@@ -4,17 +4,11 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\GitHooksStdInputReader\Tests\Unit;
 
-class PostReceiveReaderTest extends ReaderTestBase
+class PreReceiveReaderTest extends ReaderTestBase
 {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $gitHook = 'post-receive';
+    protected string $gitHook = 'pre-receive';
 
-    /**
-     * {@inheritdoc}
-     */
     public function caseAllInOne(): array
     {
         return [
