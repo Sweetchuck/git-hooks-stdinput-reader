@@ -8,7 +8,7 @@ class ReaderFactory
 {
     const NULL_HASH = '0000';
 
-    public static $classNameMapping = [
+    public static array $classNameMapping = [
         'post-receive' => PostReceiveReader::class,
         'post-rewrite' => PostRewriteReader::class,
         'pre-push' => PrePushReader::class,

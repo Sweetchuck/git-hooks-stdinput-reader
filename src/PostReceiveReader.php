@@ -4,14 +4,21 @@ declare(strict_types = 1);
 
 namespace Sweetchuck\GitHooksStdInputReader;
 
+use Sweetchuck\GitHooksStdInputReader\Item\BaseItem;
+use Sweetchuck\GitHooksStdInputReader\Item\ReceiveItem;
+
 /**
- * @method Item\ReceiveItem current()
+ * @method \Sweetchuck\GitHooksStdInputReader\Item\ReceiveItem current()
  */
 class PostReceiveReader extends BaseReader
 {
-    protected function parse(string $line)
+
+    /**
+     * @return \Sweetchuck\GitHooksStdInputReader\Item\ReceiveItem
+     */
+    protected function parse(string $line): BaseItem
     {
         // @todo Validate.
-        return new Item\ReceiveItem(...explode(' ', trim($line)));
+        return new ReceiveItem(...explode(' ', trim($line)));
     }
 }

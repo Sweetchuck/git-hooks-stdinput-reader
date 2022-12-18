@@ -7,17 +7,14 @@ namespace Sweetchuck\GitHooksStdInputReader\Tests\Unit;
 abstract class ReaderTestBase extends TestBase
 {
 
-    /**
-     * @var string
-     */
-    protected $gitHook = '';
+    protected string $gitHook = '';
 
     abstract public function caseAllInOne(): array;
 
     /**
      * @dataProvider caseAllInOne
      */
-    public function testAllInOne(array $lines)
+    public function testAllInOne(array $lines): void
     {
         $reader = $this->getReader($this->gitHook, $lines);
 

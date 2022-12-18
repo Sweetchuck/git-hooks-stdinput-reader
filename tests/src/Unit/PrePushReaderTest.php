@@ -7,10 +7,7 @@ namespace Sweetchuck\GitHooksStdInputReader\Tests\Unit;
 class PrePushReaderTest extends ReaderTestBase
 {
 
-    /**
-     * {@inheritdoc}
-     */
-    protected $gitHook = 'pre-push';
+    protected string $gitHook = 'pre-push';
 
     /**
      * {@inheritdoc}

@@ -6,25 +6,13 @@ namespace Sweetchuck\GitHooksStdInputReader\Item;
 
 class PrePushItem extends BaseItem
 {
-    /**
-     * @var string
-     */
-    public $localRef;
+    public string $localRef;
 
-    /**
-     * @var string
-     */
-    public $localSha1;
+    public string $localSha1;
 
-    /**
-     * @var string
-     */
-    public $remoteRef;
+    public string $remoteRef;
 
-    /**
-     * @var string
-     */
-    public $remoteSha1;
+    public string $remoteSha1;
 
     public function __construct(string $localRef, string $localSha1, string $remoteRef, string $remoteSha1)
     {
@@ -34,9 +22,6 @@ class PrePushItem extends BaseItem
         $this->remoteSha1 = $remoteSha1;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getPropertyValues(): array
     {
         return [
