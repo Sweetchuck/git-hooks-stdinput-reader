@@ -41,8 +41,7 @@
         "sweetchuck/git-hooks": "2.x-dev",
         "sweetchuck/robo-git": "2.x-dev",
         "sweetchuck/robo-phpcs": "2.x-dev",
-        "sweetchuck/robo-phpmd": "2.x-dev",
-        "sweetchuck/utils": "1.x-dev"
+        "sweetchuck/robo-phpmd": "2.x-dev"
     },
     "autoload": {
         "psr-4": {
