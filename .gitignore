@@ -1,5 +1,6 @@
-
+/.cache/
 /reports/
+
 /vendor/
 
 /phpcs.xml
